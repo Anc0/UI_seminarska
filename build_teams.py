@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import DataPreparation
+from DataPreparation import DataPreparation
 
 class BuildTeams:
 
@@ -36,5 +36,6 @@ if __name__ == "__main__":
 
     dp = DataPreparation()
 
+    # build teams for all participating nations in FIFA World Cup 2018
     for team in dp.TEAMS:
-        bt.build_team(team.name)
+        bt.build_team(team['name'])
