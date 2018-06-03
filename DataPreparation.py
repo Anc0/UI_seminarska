@@ -110,14 +110,14 @@ class DataPreparation:
         {"id": 54, "home": "1G", "away": "2H", "stage": 2},
         {"id": 55, "home": "1F", "away": "2E", "stage": 2},
         {"id": 56, "home": "1H", "away": "2G", "stage": 2},
-        {"id": 57, "home": "W49", "away": "W50", "stage": 3},
-        {"id": 58, "home": "W53", "away": "W54", "stage": 3},
-        {"id": 59, "home": "W55", "away": "W56", "stage": 3},
-        {"id": 60, "home": "W51", "away": "W52", "stage": 3},
-        {"id": 61, "home": "W57", "away": "W58", "stage": 4},
-        {"id": 62, "home": "W59", "away": "W60", "stage": 4},
-        {"id": 63, "home": "L61", "away": "L62", "stage": 5},
-        {"id": 64, "home": "W61", "away": "W62", "stage": 6}
+        {"id": 57, "home": 49, "away": 50, "stage": 3},
+        {"id": 58, "home": 53, "away": 54, "stage": 3},
+        {"id": 59, "home": 55, "away": 56, "stage": 3},
+        {"id": 60, "home": 51, "away": 52, "stage": 3},
+        {"id": 61, "home": 57, "away": 58, "stage": 4},
+        {"id": 62, "home": 59, "away": 60, "stage": 4},
+        {"id": 63, "home": 61, "away": 62, "stage": 5},
+        {"id": 64, "home": 61, "away": 62, "stage": 6}
     ]
 
     def __init__(self):
