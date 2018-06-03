@@ -1,4 +1,5 @@
 from random import randint
+from time import sleep
 
 from DataPreparation import DataPreparation
 from NeuralNet import NeuralNet
@@ -63,7 +64,8 @@ class Simulation:
         # Predict the score
         home_score, away_score = self.ann.predict(home, away)
         # Print game results
-        self.print_knockout_stage()
+        # self.print_knockout_stage()
+        self.print_game(home, away, home_score, away_score, stage)
         # Return the winners id
         if home_score > away_score:
             return home
@@ -237,6 +239,7 @@ class Simulation:
             groups[6][3]["name"], groups[6][3]["points"], groups[6][3]["goal_difference"], groups[6][3]["number_of_goals"],
             groups[7][3]["name"], groups[7][3]["points"], groups[7][3]["goal_difference"], groups[7][3]["number_of_goals"]))
         print("====================================================================================================================================")
+        sleep(0.5)
 
     def print_knockout_stage(self):
         print("{:12}{:>2}|                              ".format())
