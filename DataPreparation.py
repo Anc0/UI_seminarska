@@ -28,7 +28,7 @@ class DataPreparation:
         {"id": 21, "name": "Germany", "points": 0, "goal_difference": 0, "number_of_goals": 0},
         {"id": 22, "name": "Mexico", "points": 0, "goal_difference": 0, "number_of_goals": 0},
         {"id": 23, "name": "Sweden", "points": 0, "goal_difference": 0, "number_of_goals": 0},
-        {"id": 24, "name": "Korea Republic", "points": 0, "goal_difference": 0, "number_of_goals": 0},
+        {"id": 24, "name": "Korea", "points": 0, "goal_difference": 0, "number_of_goals": 0},
 
         {"id": 25, "name": "Belgium", "points": 0, "goal_difference": 0, "number_of_goals": 0},
         {"id": 26, "name": "Panama", "points": 0, "goal_difference": 0, "number_of_goals": 0},
