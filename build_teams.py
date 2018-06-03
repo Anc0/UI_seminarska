@@ -2,10 +2,10 @@ import numpy as np
 import pandas as pd
 from DataPreparation import DataPreparation
 
+
 class BuildTeams:
 
-    def __init__(self, squad_size=11, selected_attrs=['Overall']):
-
+    def __init__(self, squad_size, selected_attrs):
         # no. of best players to select for each team
         self.squad_size = squad_size
 
@@ -37,8 +37,7 @@ class BuildTeams:
 
 
 class Games:
-    def __init__(self, after_year=2015):
-
+    def __init__(self, after_year):
         # only select games after (but including) given year
         self.after_year = after_year
 
@@ -84,7 +83,6 @@ class Games:
 class GameData:
 
     def __init__(self, squad_size=11, selected_attrs=['Overall'], after_year=2015):
-
         # no. of best players to select for each team
         self.squad_size = squad_size
 
@@ -98,14 +96,13 @@ class GameData:
         self.after_year = after_year
 
     def get_learning_data(self):
-
         # get all nations
-        games = Games()
+        games = Games(self.after_year)
         games.read_data()
         all_nations = games.get_all_nations()
 
         # build teams for all participating nations in FIFA World Cup 2018
-        bt = BuildTeams()
+        bt = BuildTeams(self.squad_size, self.selected_attrs)
         bt.read_data()
 
         # a dict with a nations' name as a key and players' data as value
