@@ -89,17 +89,15 @@ class Simulation:
         :param progressor: id of the winning team
         :param stage: current stage of the tournament
         """
-        game = [item for item in self.games if item["stage"] > 2 and int(item["home"][1:3]) == match_id]
+        game = [item for item in self.games if item["stage"] > 2 and item["home"] == match_id]
         if len(game) > 0:
             game[0]["home"] = progressor
             return
-        game = [item for item in self.games if item["stage"] > 2 and int(item["away"][1:3]) == match_id]
+        game = [item for item in self.games if item["stage"] > 2 and item["away"] == match_id]
         if len(game) > 0:
             game[0]["away"] = progressor
             return
         raise Exception("No match found")
-
-
 
     def simulate_tournament(self):
         current_game = 0
@@ -113,8 +111,9 @@ class Simulation:
         self.set_advancing_teams()
         # Set stage 2 matches with appropriate team ids
         self.determine_knockout_pairs()
-        # Eight-finals simulation
-        while game["stage"] == 2:
+
+        # Eight-finals an quarter finals simulation
+        while game["stage"] == 2 or game["stage"] == 3:
             # Get game winner
             progressor = self.simulate_game_knockout(game["home"], game["away"])
             # Set the game winner in the next round
@@ -124,21 +123,45 @@ class Simulation:
             pass
         for x in self.games:
             print(x)
-        # Quarter-finals simulation
-        """while game["stage"] == 3:
 
-            current_game += 1
-            game = self.games[current_game]
-            pass
         # Semi-finals simulation
-        while game["stage"] == 4:
+        progressor = self.simulate_game_knockout(game["home"], game["away"])
+        if progressor == game["home"]:
+            self.games[63]["home"] = game["home"]
+            self.games[62]["home"] = game["away"]
+        else:
+            self.games[63]["home"] = game["away"]
+            self.games[62]["home"] = game["home"]
+        current_game += 1
+        game = self.games[current_game]
 
-            current_game += 1
-            game = self.games[current_game]
-            pass
+        progressor = self.simulate_game_knockout(game["home"], game["away"])
+        if progressor == game["home"]:
+            self.games[63]["away"] = game["home"]
+            self.games[62]["away"] = game["away"]
+        else:
+            self.games[63]["away"] = game["away"]
+            self.games[62]["away"] = game["home"]
+        current_game += 1
+        game = self.games[current_game]
+
         # Third place game simulation
+        third_place = self.simulate_game_knockout(game["home"], game["away"])
+        print("Third place team is:")
+        print(self.get_team(third_place))
+        current_game += 1
+        game = self.games[current_game]
+        winner = self.simulate_game_knockout(game["home"], game["away"])
+        if winner == game["home"]:
+            second_place = game["away"]
+        else:
+            second_place = game["home"]
+        print("Second place team is:")
+        print(self.get_team(second_place))
+        print("The winner is:")
+        print(self.get_team(winner))
 
-        # Finals simulation"""
+        # Finals simulation
 
     # Helper functions
     def get_team(self, team_id):
@@ -148,6 +171,7 @@ class Simulation:
         :return: team
         """
         return [item for item in self.teams if item["id"] == team_id][0]
+
 
 if __name__ == "__main__":
     s = Simulation()
