@@ -122,9 +122,3 @@ class DataPreparation:
 
     def __init__(self):
         pass
-
-    def import_data(self):
-        pass
-
-    def get_tournament(self):
-        pass
