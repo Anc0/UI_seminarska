@@ -37,6 +37,7 @@ class BuildTeams:
 
 
 class Games:
+
     def __init__(self, after_year):
         # only select games after (but including) given year
         self.after_year = after_year
