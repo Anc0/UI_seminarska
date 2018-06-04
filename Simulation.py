@@ -13,7 +13,42 @@ class Simulation:
         self.teams = self.data.TEAMS
         self.groups = self.data.GROUPS
         self.games = self.data.MATCHES
-        self.knockout_print_array = []
+        self.print_counter = 0
+        self.quarter_final_couner = 16
+        self.print_array = [
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+            {"name": "", "score": ""},
+        ]
 
     def simulate_game_group(self, home, away):
         """
@@ -53,7 +88,7 @@ class Simulation:
             group["first"] = order[0]["id"]
             group["second"] = order[1]["id"]
 
-    def simulate_game_knockout(self, home, away, stage):
+    def simulate_game_knockout(self, home, away, stage, current_game):
         """
         Get the teams via id and predict the winner of the game. If the score is tied, pick a winner at random.
         :param home: home team id
@@ -63,19 +98,30 @@ class Simulation:
         """
         # Predict the score
         home_score, away_score = self.ann.predict(home, away)
-        # Print game results
-        # self.print_knockout_stage()
+        winner = self.get_winner(home_score, away_score)
         self.print_game(home, away, home_score, away_score, stage)
+        if stage == 2:
+            self.fill_quarter_finals(self.get_team(home)["name"], self.get_team(away)["name"], home_score, away_score, winner)
+        elif stage == 3:
+            self.fill_semi_finals(self.get_team(home)["name"], self.get_team(away)["name"], home_score, away_score, winner)
+        self.print_knockout_stage()
+
+        if winner == "home":
+            return home
+        else:
+            return away
+
+    def get_winner(self, home_score, away_score):
         # Return the winners id
         if home_score > away_score:
-            return home
+            return "home"
         elif home_score < away_score:
-            return away
+            return "away"
         elif home_score == away_score:
             if randint(0, 1) == 0:
-                return home
+                return "home"
             else:
-                return away
+                return "away"
 
     def determine_knockout_pairs(self):
         """
@@ -85,6 +131,12 @@ class Simulation:
         for pair in eight_finals:
             pair["home"] = [item["first"] for item in self.groups if item["id"] == pair["home"][1]][0]
             pair["away"] = [item["second"] for item in self.groups if item["id"] == pair["away"][1]][0]
+            # Fill eight finals brackets
+            self.print_array[self.print_counter] = {"name":self.get_team(pair["home"])["name"], "score":""}
+            self.print_counter += 1
+            self.print_array[self.print_counter] = {"name": self.get_team(pair["away"])["name"], "score": ""}
+            self.print_counter += 1
+        self.print_counter = 0
 
     def set_progressor(self, match_id, progressor):
         """
@@ -121,15 +173,14 @@ class Simulation:
         # Eight-finals an quarter finals simulation
         while game["stage"] == 2 or game["stage"] == 3:
             # Get game winner
-            progressor = self.simulate_game_knockout(game["home"], game["away"], game["stage"])
+            progressor = self.simulate_game_knockout(game["home"], game["away"], game["stage"], current_game)
             # Set the game winner in the next round
             self.set_progressor(game["id"], progressor)
             current_game += 1
             game = self.games[current_game]
-            pass
 
         # Semi-finals simulation
-        progressor = self.simulate_game_knockout(game["home"], game["away"], game["stage"])
+        progressor = self.simulate_game_knockout(game["home"], game["away"], game["stage"], current_game)
         if progressor == game["home"]:
             self.games[63]["home"] = game["home"]
             self.games[62]["home"] = game["away"]
@@ -139,7 +190,7 @@ class Simulation:
         current_game += 1
         game = self.games[current_game]
 
-        progressor = self.simulate_game_knockout(game["home"], game["away"], game["stage"])
+        progressor = self.simulate_game_knockout(game["home"], game["away"], game["stage"], current_game)
         if progressor == game["home"]:
             self.games[63]["away"] = game["home"]
             self.games[62]["away"] = game["away"]
@@ -150,12 +201,12 @@ class Simulation:
         game = self.games[current_game]
 
         # Third place game simulation
-        third_place = self.simulate_game_knockout(game["home"], game["away"], game["stage"])
+        third_place = self.simulate_game_knockout(game["home"], game["away"], game["stage"], current_game)
         current_game += 1
         game = self.games[current_game]
 
         # Finals simulation
-        winner = self.simulate_game_knockout(game["home"], game["away"], game["stage"])
+        winner = self.simulate_game_knockout(game["home"], game["away"], game["stage"], current_game)
         if winner == game["home"]:
             second_place = game["away"]
         else:
@@ -239,33 +290,47 @@ class Simulation:
             groups[6][3]["name"], groups[6][3]["points"], groups[6][3]["goal_difference"], groups[6][3]["number_of_goals"],
             groups[7][3]["name"], groups[7][3]["points"], groups[7][3]["goal_difference"], groups[7][3]["number_of_goals"]))
         print("====================================================================================================================================")
-        sleep(0.5)
+        # sleep(0.1)
 
     def print_knockout_stage(self):
-        print("{:12}{:>2}|                              ".format())
-        print("          - {:12}{:>2}|                  ".format())
-        print("{:12}{:>2}|           |                  ".format())
-        print("{:12}{:>2}|           - {:12}{:>2}       ".format())
-        print("          - {:12}{:>2}|        |         ".format())
-        print("{:12}{:>2}|                    |         ".format())
-        print("{:12}{:>2}|                    - {:12}{:>2}".format())
-        print("          - {:12}{:>2}|        |        |".format())
-        print("{:12}{:>2}|           - {:12}{:>2}      |".format())
-        print("{:12}{:>2}|           |                 |".format())
-        print("          - {:12}{:>2}|                 |".format())
-        print("{:12}{:>2}|                             |".format())
-        print("{:12}{:>2}|                             - {:12}".format())
-        print("          - {:12}{:>2}|                 |".format())
-        print("{:12}{:>2}|           |                 |".format())
-        print("{:12}{:>2}|           - {:12}{:>2}      |".format())
-        print("          - {:12}{:>2}|        |        |".format())
-        print("{:12}{:>2}|                    - {:12}{:>2}".format())
-        print("{:12}{:>2}|                    |         ".format())
-        print("          - {:12}{:>2}|        |         ".format())
-        print("{:12}{:>2}|           - {:12}{:>2}       ".format())
-        print("{:12}{:>2}|           |                  ".format())
-        print("          - {:12}{:>2}|                  ".format())
-        print("{:12}{:>2}|                              ".format())
+        print("{:12}{:>2}|                              ".format(self.print_array[0]["name"], self.print_array[0]["score"]))
+        print("              - {:12}{:>2}|                  ".format(self.print_array[16]["name"], self.print_array[16]["score"]))
+        print("{:12}{:>2}|               |                  ".format(self.print_array[1]["name"], self.print_array[1]["score"]))
+        print("{:12}{:>2}|               - {:12}{:>2}|       ".format(self.print_array[2]["name"], self.print_array[2]["score"], self.print_array[0]["name"], self.print_array[0]["score"]))
+        print("              - {:12}{:>2}|               |         ".format(self.print_array[17]["name"], self.print_array[17]["score"]))
+        print("{:12}{:>2}|                               |         ".format(self.print_array[3]["name"], self.print_array[3]["score"]))
+        print("{:12}{:>2}|                               - {:12}{:>2}|".format(self.print_array[8]["name"], self.print_array[8]["score"], self.print_array[0]["name"], self.print_array[0]["score"]))
+        print("              - {:12}{:>2}|               |               |".format(self.print_array[18]["name"], self.print_array[18]["score"]))
+        print("{:12}{:>2}|               - {:12}{:>2}|               |".format(self.print_array[9]["name"], self.print_array[9]["score"], self.print_array[0]["name"], self.print_array[0]["score"]))
+        print("{:12}{:>2}|               |                               |".format(self.print_array[10]["name"], self.print_array[10]["score"]))
+        print("              - {:12}{:>2}|                               |".format(self.print_array[19]["name"], self.print_array[19]["score"]))
+        print("{:12}{:>2}|                                               |".format(self.print_array[11]["name"], self.print_array[11]["score"]))
+        print("{:12}{:>2}|                                               - {:12}".format(self.print_array[4]["name"], self.print_array[4]["score"], self.print_array[0]["name"]))
+        print("              - {:12}{:>2}|                               |".format(self.print_array[20]["name"], self.print_array[20]["score"]))
+        print("{:12}{:>2}|               |                               |".format(self.print_array[5]["name"], self.print_array[5]["score"], self.print_array[0]["name"], self.print_array[0]["score"]))
+        print("{:12}{:>2}|               - {:12}{:>2}|               |".format(self.print_array[6]["name"], self.print_array[6]["score"], self.print_array[0]["name"], self.print_array[0]["score"]))
+        print("              - {:12}{:>2}|               |               |".format(self.print_array[21]["name"], self.print_array[21]["score"]))
+        print("{:12}{:>2}|                               - {:12}{:>2}|".format(self.print_array[7]["name"], self.print_array[7]["score"], self.print_array[0]["name"], self.print_array[0]["score"]))
+        print("{:12}{:>2}|                               |         ".format(self.print_array[12]["name"], self.print_array[12]["score"]))
+        print("              - {:12}{:>2}|               |         ".format(self.print_array[22]["name"], self.print_array[22]["score"]))
+        print("{:12}{:>2}|               - {:12}{:>2}|       ".format(self.print_array[13]["name"], self.print_array[13]["score"], self.print_array[0]["name"], self.print_array[0]["score"]))
+        print("{:12}{:>2}|               |                  ".format(self.print_array[14]["name"], self.print_array[14]["score"]))
+        print("              - {:12}{:>2}|                  ".format(self.print_array[23]["name"], self.print_array[23]["score"]))
+        print("{:12}{:>2}|                              ".format(self.print_array[15]["name"], self.print_array[15]["score"]))
+
+    def fill_quarter_finals(self, home, away, home_score, away_score, winner):
+        self.print_array[self.print_counter] = {"name":home, "score":home_score}
+        self.print_counter += 1
+        self.print_array[self.print_counter] = {"name":away, "score":away_score}
+        self.print_counter += 1
+        if winner == "home":
+            self.print_array[self.quarter_final_couner] = {"name":home, "score":""}
+        else:
+            self.print_array[self.quarter_final_couner] = {"name":away, "score": ""}
+        self.quarter_final_couner += 1
+
+    def fill_semi_finals(self, home, away, home_score, away_score, winner):
+        pass
 
 
 if __name__ == "__main__":
