@@ -62,7 +62,7 @@ class Simulation:
             pair["away"] = [item["second"] for item in self.groups if item["id"] == pair["away"][1]][0]
 
     def fill_knockout_print(self):
-        games = [50, 49, 53, 54, 51, 52, 55, 56]
+        games = [49, 50, 51, 52, 53, 54, 55, 56]
         for game in games:
             self.set_print_chart(self.get_team(self.games[game - 1]["home"])["name"])
             self.set_print_chart(self.get_team(self.games[game - 1]["away"])["name"])
@@ -70,9 +70,6 @@ class Simulation:
     def set_print_chart(self, name):
         self.print_array[self.print_counter] = name
         self.print_counter += 1
-
-
-
 
     def simulate_game_knockout(self, home, away, stage, current_game):
         """
@@ -95,8 +92,10 @@ class Simulation:
         # The winner progresses to the next round
         if result == 0:
             self.set_winner(home, stage, current_game)
+            self.set_print_chart(home_team["name"])
         elif result == 1:
             self.set_winner(away, stage, current_game)
+            self.set_print_chart(away_team["name"])
         return result
 
     def set_winner(self, winner, stage, current_game):
@@ -129,9 +128,11 @@ class Simulation:
         if result == 0:
             self.games[62][side] = away
             self.games[63][side] = home
+            self.set_print_chart(home_team["name"])
         if result == 1:
             self.games[62][side] = home
             self.games[63][side] = away
+            self.set_print_chart(away_team["name"])
         return result
 
     def simulate_tournament(self):
@@ -149,23 +150,32 @@ class Simulation:
         self.determine_knockout_pairs()
         self.fill_knockout_print()
 
-        # self.print_knockout_stage()
+        self.print_knockout_stage()
 
-        # Simulate eight and quarter-finals
-        while game["stage"] == 2 or game["stage"] == 3:
+        # Simulate eight-finals
+        while game["stage"] == 2:
             result = self.simulate_game_knockout(game["home"], game["away"], game["stage"], current_game)
-            self.print_game(game["home"], game["away"], game["stage"], result)
 
             current_game += 1
             game = self.games[current_game]
+        self.print_knockout_stage()
+
+        # Simulate quarter-finals
+        while game["stage"] == 3:
+            result = self.simulate_game_knockout(game["home"], game["away"], game["stage"], current_game)
+
+            current_game += 1
+            game = self.games[current_game]
+        self.print_knockout_stage()
 
         # Simulate semi-finals
         while game["stage"] == 4:
             result = self.simulate_semis(game["home"], game["away"], current_game)
-            self.print_game(game["home"], game["away"], game["stage"], result)
+            # self.print_game(game["home"], game["away"], game["stage"], result)
 
             current_game += 1
             game = self.games[current_game]
+        self.print_knockout_stage()
 
         # Simulate 3rd place game
         home_team = self.get_team(game["home"])
@@ -179,7 +189,7 @@ class Simulation:
             third_place = home_team["name"]
         elif result == 1:
             third_place = away_team["name"]
-        self.print_game(game["home"], game["away"], game["stage"], result)
+        # self.print_game(game["home"], game["away"], game["stage"], result)
 
         current_game += 1
         game = self.games[current_game]
@@ -198,8 +208,11 @@ class Simulation:
         elif result == 1:
             winner = away_team["name"]
             second_place = home_team["name"]
+        self.set_print_chart(winner)
+        self.print_knockout_stage()
+        print()
 
-        self.print_game(game["home"], game["away"], game["stage"], result)
+        # self.print_game(game["home"], game["away"], game["stage"], result)
         print("Third place: " + third_place)
         print("Second place: " + second_place)
         print("The champion: " + winner)
@@ -285,30 +298,32 @@ class Simulation:
         # sleep(0.1)
 
     def print_knockout_stage(self):
+        print()
         print("{:12}|                              ".format(self.print_array[0]))
-        print("              - {:12}|                  ".format(self.print_array[16]))
+        print("             -- {:12}|                  ".format(self.print_array[16]))
         print("{:12}|               |                  ".format(self.print_array[1]))
-        print("{:12}|               - {:12}|       ".format(self.print_array[2], self.print_array[0]))
-        print("              - {:12}|               |         ".format(self.print_array[17]))
+        print("{:12}|                -- {:12}|       ".format(self.print_array[2], self.print_array[24]))
+        print("             -- {:12}|               |         ".format(self.print_array[17]))
         print("{:12}|                               |         ".format(self.print_array[3]))
-        print("{:12}|                               - {:12}|".format(self.print_array[8], self.print_array[0]))
-        print("              - {:12}|               |               |".format(self.print_array[18]))
-        print("{:12}|               - {:12}|               |".format(self.print_array[9], self.print_array[0]))
+        print("{:12}|                                -- {:12}|".format(self.print_array[8], self.print_array[28]))
+        print("             -- {:12}|               |               |".format(self.print_array[20]))
+        print("{:12}|                -- {:12}|               |".format(self.print_array[9], self.print_array[25]))
         print("{:12}|               |                               |".format(self.print_array[10]))
-        print("              - {:12}|                               |".format(self.print_array[19]))
+        print("             -- {:12}|                               |".format(self.print_array[21]))
         print("{:12}|                                               |".format(self.print_array[11]))
-        print("{:12}|                                               - {:12}".format(self.print_array[4], self.print_array[0]))
-        print("              - {:12}|                               |".format(self.print_array[20]))
-        print("{:12}|               |                               |".format(self.print_array[5], self.print_array[0]))
-        print("{:12}|               - {:12}|               |".format(self.print_array[6], self.print_array[0]))
-        print("              - {:12}|               |               |".format(self.print_array[21]))
-        print("{:12}|                               - {:12}|".format(self.print_array[7], self.print_array[0]))
+        print("{:12}|                                                -- {:12}".format(self.print_array[4], self.print_array[30]))
+        print("             -- {:12}|                               |".format(self.print_array[18]))
+        print("{:12}|               |                               |".format(self.print_array[5]))
+        print("{:12}|                -- {:12}|               |".format(self.print_array[6], self.print_array[27]))
+        print("             -- {:12}|               |               |".format(self.print_array[19]))
+        print("{:12}|                                -- {:12}|".format(self.print_array[7], self.print_array[29]))
         print("{:12}|                               |         ".format(self.print_array[12]))
-        print("              - {:12}|               |         ".format(self.print_array[22]))
-        print("{:12}|               - {:12}|       ".format(self.print_array[13], self.print_array[0]))
+        print("             -- {:12}|               |         ".format(self.print_array[22]))
+        print("{:12}|                -- {:12}|       ".format(self.print_array[13], self.print_array[26]))
         print("{:12}|               |                  ".format(self.print_array[14]))
-        print("              - {:12}|                  ".format(self.print_array[23]))
+        print("             -- {:12}|                  ".format(self.print_array[23]))
         print("{:12}|                              ".format(self.print_array[15]))
+        sleep(5)
 
 
 if __name__ == "__main__":
