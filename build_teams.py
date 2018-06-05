@@ -55,6 +55,9 @@ class Games:
         # get all nations form games dataset so we can build their teams with players' data
         return np.unique(self.data[['home_team', 'away_team']].values)
 
+    def create_game_vector(self, teams, team1, team2):
+        return np.concatenate([teams[team1], teams[team2]])
+
     def get_games(self, teams):
         # teams: a dict with a name of the team as a key and its' data as value
 
@@ -68,7 +71,7 @@ class Games:
 
             # if we have players data for both teams
             if team1 in teams and team2 in teams:
-                game = np.concatenate([teams[team1], teams[team2]])
+                game = self.create_game_vector(teams, team1, team2)
                 score = [row['home_score'], row['away_score']]
                 X.append(game)
                 y.append(score)
@@ -96,18 +99,26 @@ class GameData:
         # only select games after (but including) given year
         self.after_year = after_year
 
-    def get_learning_data(self):
+        # teams: a dict with a name of the team as a key and its' data as value
+        self.teams = None
+
+        # helper class
+        self.games = Games(self.after_year)
+        self.games.read_data()
+
+    def build_teams(self):
+        """
+        Fill a dict with a nations' name as a key and players' data as value
+        """
         # get all nations
-        games = Games(self.after_year)
-        games.read_data()
-        all_nations = games.get_all_nations()
+        all_nations = self.games.get_all_nations()
 
         # build teams for all participating nations in FIFA World Cup 2018
         bt = BuildTeams(self.squad_size, self.selected_attrs)
         bt.read_data()
 
         # a dict with a nations' name as a key and players' data as value
-        team_dict = {}
+        self.teams = {}
 
         # build squad for every nation
         for nation in all_nations:
@@ -116,15 +127,38 @@ class GameData:
             if team.shape[0] >= bt.squad_size:
                 #print(team)
                 # convert pandas dataframe to matrix and flatten it
-                team_dict[nation] = team.as_matrix().flatten()
+                self.teams[nation] = team.as_matrix().flatten()
+
+    def get_learning_data(self):
+        """
+        Build X and y from all available matches
+        """
+        if self.teams is None:
+            self.build_teams()
 
         # now put together X and y for every match
-        return games.get_games(team_dict)
+        return self.games.get_games(self.teams)
 
+    def get_one_game_data(self, team1, team2):
+        """
+        Build a vector for a match between two teams
+        """
+        if self.teams is None:
+            self.build_teams()
+
+        # now put together X and y for every match
+        return self.games.create_game_vector(self.teams, team1, team2)
 
 
 if __name__ == "__main__":
     gd = GameData()
+
+    # this is how u get X (all available games)
     X, y = gd.get_learning_data()
     print(X.shape, y.shape)
+
+    # this is how u get a vector for one game
+    x = gd.get_one_game_data("Russia", "Germany")
+    print(x)
+
 
