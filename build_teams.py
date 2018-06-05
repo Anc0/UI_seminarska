@@ -98,7 +98,7 @@ class Games:
 
 class GameData:
 
-    def __init__(self, squad_size=11, selected_attrs=['overall'], after_year=2015):
+    def __init__(self, squad_size=11, selected_attrs=['overall'], after_year=2012):
         # no. of best players to select for each team
         self.squad_size = squad_size
 

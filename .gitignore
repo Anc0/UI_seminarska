@@ -103,6 +103,6 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-.idea
-.png
-.model
+*.idea
+*.png
+*.model
