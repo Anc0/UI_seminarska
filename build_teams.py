@@ -16,7 +16,7 @@ class BuildTeams:
         self.selected_attrs = selected_attrs
 
     def read_data(self):
-        data = pd.read_csv('data/CompleteDataset.csv')
+        data = pd.read_csv('data/complete.csv')
         #print(data.head())
 
         # only keep selected attributes
