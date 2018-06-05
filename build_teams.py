@@ -10,7 +10,7 @@ class BuildTeams:
         self.squad_size = squad_size
 
         # base attributes that are always selected
-        self.base_attrs = ['Name', 'Nationality']
+        self.base_attrs = ['name', 'nationality']
 
         # which player's attributes to include
         self.selected_attrs = selected_attrs
@@ -30,7 +30,7 @@ class BuildTeams:
         #print(team_name)
 
         # TODO: require each team to have a certain no. of players from each position (at least one GK,...)
-        team = self.data[self.data.Nationality == team_name].sort_values('Overall', ascending=False).head(self.squad_size)
+        team = self.data[self.data.nationality == team_name].sort_values('overall', ascending=False).head(self.squad_size)
 
         # remove data without base attributes (we only need those to form national teams)
         return team[self.selected_attrs]
@@ -86,12 +86,12 @@ class Games:
 
 class GameData:
 
-    def __init__(self, squad_size=11, selected_attrs=['Overall'], after_year=2015):
+    def __init__(self, squad_size=11, selected_attrs=['overall'], after_year=2015):
         # no. of best players to select for each team
         self.squad_size = squad_size
 
         # base attributes that are always selected
-        self.base_attrs = ['Name', 'Nationality']
+        self.base_attrs = ['name', 'nationality']
 
         # which player's attributes to include
         self.selected_attrs = selected_attrs
