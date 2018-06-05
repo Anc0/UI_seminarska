@@ -34,6 +34,7 @@ class NeuralNet:
 
     def build(self):
         self.model.add(Dense(units=512, input_shape=(22 * 43, ), activation='relu'))
+        self.model.add(Dense(units=256, activation='relu'))
         self.model.add(Dense(units=128, activation='relu'))
         self.model.add(Dense(units=32, activation='relu'))
         self.model.add(Dense(units=3, activation='softmax'))
@@ -42,6 +43,7 @@ class NeuralNet:
     def fit(self):
         X, y = self.game_data.get_learning_data()
         y = to_categorical(y)
+        X = X / 100
         self.H = self.model.fit(X, y, epochs=self.epochs, verbose=2, validation_split=0.3, batch_size=self.batch_size, shuffle=True)
         self.model.save("world_cup.model")
 
