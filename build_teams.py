@@ -72,9 +72,21 @@ class Games:
             # if we have players data for both teams
             if team1 in teams and team2 in teams:
                 game = self.create_game_vector(teams, team1, team2)
-                score = [row['home_score'], row['away_score']]
+                #score = [row['home_score'], row['away_score']]
+
+                # get the winner
+                home_goals = int(row['home_score'])
+                away_goals = int(row['away_score'])
+                winner = 2      # it's a tie!
+
+                if home_goals > away_goals:
+                    winner = 0
+                if away_goals > home_goals:
+                    winner = 1
+
                 X.append(game)
-                y.append(score)
+                #y.append(score)
+                y.append([winner])
 
         # convert to numpy array
         X = np.asarray(X)
