@@ -38,13 +38,13 @@ class NeuralNet:
         self.model.add(Dense(units=128, activation='relu'))
         self.model.add(Dense(units=32, activation='relu'))
         self.model.add(Dense(units=3, activation='softmax'))
-        self.model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+        self.model.compile(optimizer='sgd', loss='categorical_crossentropy', metrics=['accuracy'])
 
     def fit(self):
         X, y = self.game_data.get_learning_data()
         y = to_categorical(y)
         X = X / 100
-        self.H = self.model.fit(X, y, epochs=self.epochs, verbose=2, validation_split=0.3, batch_size=self.batch_size, shuffle=True)
+        self.H = self.model.fit(X, y, epochs=self.epochs, verbose=2, validation_split=0.2, batch_size=self.batch_size)
         self.model.save("world_cup.model")
 
     def predict(self, home, away):

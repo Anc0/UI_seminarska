@@ -323,7 +323,7 @@ class Simulation:
         print("{:12}|               |                  ".format(self.print_array[14]))
         print("             -- {:12}|                  ".format(self.print_array[23]))
         print("{:12}|                              ".format(self.print_array[15]))
-        sleep(5)
+        sleep(2)
 
 
 if __name__ == "__main__":
